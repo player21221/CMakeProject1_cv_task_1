@@ -99,7 +99,7 @@ Pix defMinPix(Mat& im, int a, int b, int rd) {
 void eradeImg(Mat& img, int rd) {
 	
 	Vec3b B(200,100,50);
-	float c = cv::abs(B);
+	float c = (B);
 	Mat out(img.rows, img.cols, img.type());
 	
 	for (int i = 1; i <= img.cols; i++) {
