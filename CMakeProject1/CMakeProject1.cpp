@@ -49,12 +49,21 @@
 #include <iostream>
 using namespace cv;
 using namespace std;
+#include <Eigen/Eigen>;
+#include <opencv2/core/eigen.hpp>
 
 
+void testFunc() {
+	Eigen::Vector3i m;
+	cv:Vec3i p(200,100,50);
+	cv2eigen(p,m);
+	auto f = m.norm();
+	cout << f;
+}
 
 int ChOvFl(int i, int len) { //prevent array quierryng to unavailable elements
-	if (i > len) return len;
-	if (i <= 0) return 1;
+	if (i >= len) return len-1;
+	if (i < 0) return 0;
 	return i;
 }
 
@@ -80,16 +89,17 @@ Templ QrAr(int i, int j, cv::Mat const& s) {
 //	return 0;
 //}
 
-template <typename Pix>
-Pix defMinPix(Mat& im, int a, int b, int rd) {
-	Pix minPix = 0;
+
+Eigen::Vector3i defMinPix(Mat& im, int a, int b, int rd) {
+	Eigen::Vector3i minPix(255,255,255), currPix(255,255,255);
 	for (int i = -rd+a; i <= rd+a; i++) {
-		for (int j = -rd+b; i <= rd+b; j++) {
+		for (int j = -rd+b; j <= rd+b; j++) {
 			/*if ( minPix > im.at<int>(ChOvFl(i,im.rows), ChOvFl(j, im.cols))) {
 				minPix = im.at<int>(i, j);
 			}*/
-			if (minPix > QrAr<Pix>(i, j, im)) {
-				minPix = QrAr<Pix>(i, j, im);
+			cv2eigen(Mat(QrAr<Vec3b>(i, j, im)), currPix);
+			if (minPix.norm() > currPix.norm()) {
+				minPix = currPix;
 			}
 		}
 	}
@@ -98,13 +108,16 @@ Pix defMinPix(Mat& im, int a, int b, int rd) {
 
 void eradeImg(Mat& img, int rd) {
 	
-	Vec3b B(200,100,50);
-	float c = (B);
+	//Vec3b B(200,100,50);
+	//float c = (B);
 	Mat out(img.rows, img.cols, img.type());
+	Mat buff(3, 1, img.type());
 	
-	for (int i = 1; i <= img.cols; i++) {
-		for (int j = 1; j <= img.rows; j++) {
-			out.at(i, j) = defMinPix(img, i, j, rd);
+	for (int i = 0; i < (img.rows - 0); i++) {
+		for (int j = 0; j < (img.cols - 0); j++) {
+			//out.at<Vec3b>(i, j) = defMinPix<Vec3b>(img, i, j, rd);
+			eigen2cv(defMinPix(img, i, j, rd), buff);
+			out.at<Vec3b>(i, j) = buff;
 		}
 	}
 
@@ -113,8 +126,8 @@ void eradeImg(Mat& img, int rd) {
 	return;
 }
 void procImg(Mat& img) {
-	//eradeImg(img, 1);
-	erode(img, img, Mat(), Point(-1,-1),1);
+	eradeImg(img, 1);
+	//erode(img, img, Mat(), Point(-1,-1),1);
 	//dilate(img, img, Mat(), Point(-1, -1), 1);
 
 }
@@ -137,6 +150,7 @@ int main(int argc, char** argv) {
 			namedWindow("Original", WINDOW_AUTOSIZE); // Create a window for display.
 			imshow("Original", image); // Show our image inside it.
 
+			//testFunc();
 			procImg(image);
 
 		    namedWindow("Processed", WINDOW_AUTOSIZE); // Create a window for display.
