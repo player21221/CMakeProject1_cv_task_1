@@ -70,15 +70,18 @@ int ChOvFl(int i, int len) { //prevent array quierryng to unavailable elements
 template <typename Templ>
 Templ QrAr(int i, int j, cv::Mat const& s) {
 
-	int rows = s.rows;
-	int cols = s.cols;
+	//int rows = s.rows;
+	//int cols = s.cols;
 
-	cv::Size sz = s.size();
-	rows = sz.height;
-	cols = sz.width;
+	//cv::Size sz = s.size();
+	//rows = sz.height;
+	//cols = sz.width;
 
-	i = ChOvFl(i, rows);
-	j = ChOvFl(j, cols);
+	//i = ChOvFl(i, rows);
+	//j = ChOvFl(j, cols);
+
+	i = ChOvFl(i, s.rows);
+	j = ChOvFl(j, s.cols);
 	
 	return s.at<Templ>(i,j);
 }
@@ -126,8 +129,8 @@ void eradeImg(Mat& img, int rd) {
 	return;
 }
 void procImg(Mat& img) {
-	eradeImg(img, 1);
-	//erode(img, img, Mat(), Point(-1,-1),1);
+	//eradeImg(img, 1);
+	erode(img, img, Mat(), Point(-1,-1),1);
 	//dilate(img, img, Mat(), Point(-1, -1), 1);
 
 }
